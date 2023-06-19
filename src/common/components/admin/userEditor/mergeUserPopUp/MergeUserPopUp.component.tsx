@@ -4,6 +4,7 @@ import arrow from '../../../../images/gif/scrolldown.gif';
 import Image from 'next/image';
 import { Dispatch, SetStateAction } from 'react';
 import { useAdmin } from '@/contexts/adminProvider/Admin.provider';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
 
 interface MergeUserPopUpProps {
   user: User | undefined;
@@ -22,8 +23,14 @@ const MergeUserPopUp = ({
     if (user && user.id && editedUser) {
       delete editedUser.id;
       console.log(editedUser);
-      editUser(user.id, editedUser);
-      window.alert('Operacja przebiegla pomyslnie');
+
+      try {
+        editUser(user.id, editedUser);
+        successPopUp('Edycja przebiegła pomyślnie.');
+      } catch (error) {
+        console.log(error);
+        failurePopUp('Operacja przerwana, wystąpił problem.');
+      }
     } else {
       window.alert('Użytkownik nie istnieje!');
     }

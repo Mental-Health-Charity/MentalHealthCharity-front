@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import styles from './Hero.module.scss';
 import DefaultButton from '@/common/components/common/defaultbutton/DefaultButton.component';
@@ -10,8 +11,16 @@ import ScrollDownIcon from '../../../images/gif/scrolldown.gif';
 import HeroImage from '../heroImage/HeroImage.component';
 import Floating from '../../common/floating/Floating.component';
 import buoyIcon from '../../../images/gif/buoy.gif';
+import { useEffect } from 'react';
+import { infoPopUp } from '@/utils/defaultNotifications';
 
 const Hero = () => {
+  useEffect(() => {
+    infoPopUp(
+      'Korzystasz z wersji developerskiej, nie wszystkie funkcje są zaimplementowane.',
+    );
+  }, []);
+
   return (
     <section className={styles.hero}>
       <main className={styles.hero__main}>

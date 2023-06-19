@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Logo from '../../../../images/static/logo.png';
 import DefaultButton from '@/common/components/common/defaultbutton/DefaultButton.component';
@@ -9,6 +11,7 @@ import styles from './Navbar.module.scss';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/authProvider/Auth.provider';
 import Link from 'next/link';
+import roles from '@/utils/roles';
 
 const Navbar = () => {
   const [isMobileVisible, setIsMobileVisible] = useState(true);
@@ -47,8 +50,8 @@ const Navbar = () => {
               aria-hidden="true"
               className={styles.navbar__authWrapper__loggedUser__dot}
             ></span>
-            {user.user_role === 'admin' && '(admin) '}
-            {user.full_name === null ? 'Anonim' : user.full_name}
+            {user.user_role === roles.admin && '[admin] '}
+            {user.full_name === '' ? 'Anonim' : user.full_name}
           </Link>
         ) : (
           <>

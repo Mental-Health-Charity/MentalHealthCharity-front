@@ -5,6 +5,7 @@ import styles from './UserSearch.module.scss';
 import { useState } from 'react';
 import { User } from '@/contexts/authProvider/Auth.provider';
 import Link from 'next/link';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
 
 const UserSearch = () => {
   const { getUserById } = useAdmin();
@@ -12,8 +13,15 @@ const UserSearch = () => {
   const [resultUser, setResultUser] = useState<User>();
 
   const getUserByAdmin = async () => {
-    const result = await getUserById(ID);
-    setResultUser(result);
+    try {
+      const result = await getUserById(ID);
+      setResultUser(result);
+      successPopUp('Pobrano użytkownika!');
+    } catch (error) {
+      failurePopUp(
+        'Nie udało się pobrać użytkownika. Prawdopodobnie nie istnieje.',
+      );
+    }
   };
 
   return (

@@ -1,5 +1,15 @@
-import Navbar from '@/common/components/common/layout/navbar/Navbar.component';
+'use client';
+
+import {
+  createCookies,
+  expireCookie,
+  getCookies,
+  isCookieExist,
+} from '@/utils/cookies';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
+import { useRouter } from 'next/navigation';
 import { createContext, useState, useEffect, useContext, use } from 'react';
+import { CookiesProvider } from 'react-cookie';
 
 export interface User {
   full_name: string;
@@ -31,11 +41,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-const useProvideAuth = () => {
-  const [user, setUser] = useState<User | null>(null);
+const useProvideAuth = (userData: User | null) => {
+  const [user, setUser] = useState<User | null>(userData);
   const [error, setError] = useState<AccessToken>();
+  const { push } = useRouter();
 
-  const signIn = async (userData: User) => {
+  const signIn = async (newUserParams: User) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/open`,
       {
@@ -43,83 +54,71 @@ const useProvideAuth = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(newUserParams),
       },
     );
     const data: AccessToken = await res.json();
-    if (!res.ok) {
+    if (res.ok) {
+      setError(undefined);
+      successPopUp('Pomyślnie utworzono nowe konto.');
+      push('login');
+    } else {
       setError(data);
+      failurePopUp(
+        'Wystąpił błąd podczas rejestracji. Wprowadź poprawne dane.',
+      );
+      console.log('FAILURE: response:', res.ok);
       console.log('error: ', data);
     }
   };
 
-  const login = async (loginData: LoginUserData) => {
-    if (typeof window == 'undefined') return;
-
+  const login = async (loginDataParams: LoginUserData) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_ACCESS_TOKEN_URL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: new URLSearchParams(loginData as any),
+      body: new URLSearchParams(loginDataParams as any),
     });
 
     const data: AccessToken = await res.json();
     const error = res.ok;
     console.log(error, res.statusText);
 
-    if (typeof window !== 'undefined' && res.ok) {
-      localStorage.setItem('jwtToken', data.access_token);
-      localStorage.setItem('jwtTokenType', data.token_type);
+    if (res.ok) {
+      createCookies('jwtToken', data.access_token, { secure: true });
+      createCookies('jwtTokenType', data.token_type, { secure: true });
 
-      const userData = await fetch(`${process.env.NEXT_PUBLIC_LOGIN_ME_URL}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `${localStorage.getItem(
-            'jwtTokenType',
-          )} ${localStorage.getItem('jwtToken')}`,
+      const authorization = `${data.token_type} ${data.access_token}`;
+
+      const getUserData = await fetch(
+        `${process.env.NEXT_PUBLIC_LOGIN_ME_URL}`,
+        {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: authorization,
+          },
         },
-      });
-      const userDataValue: User = await userData.json();
+      );
+
+      const userDataValue: User = await getUserData.json();
       setUser(userDataValue);
       console.log('USERDATA: ', user);
+      setError(undefined);
+      successPopUp('Pomyślnie zalogowano!');
     } else {
-      console.log(data);
       setError(data);
+      console.log('error: ', data);
+      failurePopUp('Wystąpił błąd, niepoprawne dane.');
     }
   };
 
   const logout = () => {
     setUser(null);
-
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('jwtToken');
-      localStorage.removeItem('jwtTokenType');
-    }
+    expireCookie('jwtToken');
+    expireCookie('jwtTokenType');
   };
-
-  useEffect(() => {
-    if (
-      typeof window !== undefined &&
-      localStorage.getItem('jwtToken') !== null
-    ) {
-      const fetchMe = async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_LOGIN_ME_URL}`, {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `${localStorage.getItem(
-              'jwtTokenType',
-            )} ${localStorage.getItem('jwtToken')}`,
-          },
-        });
-        const userDataValue: User = await res.json();
-        setUser(userDataValue);
-      };
-      fetchMe();
-    }
-  }, []);
 
   return {
     user,
@@ -130,9 +129,14 @@ const useProvideAuth = () => {
   };
 };
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // const accessToken = localStorage.getItem('jwtToken');
-  const auth = useProvideAuth();
+export const AuthProvider = ({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: User | null;
+}) => {
+  const auth = useProvideAuth(user);
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 };

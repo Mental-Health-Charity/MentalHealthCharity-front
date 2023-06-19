@@ -6,7 +6,7 @@ const DashBoard = () => {
     <section className={styles.dashboard}>
       <h1 className={styles.dashboard__heading}>Panel administratora</h1>
       <p className={styles.dashboard__serverStatus}>
-        status serwera: <span style={{ color: 'green' }}>OK</span>
+        status serwera: <span style={{ color: 'yellow' }}>NIEZNANY</span>
       </p>
       <div className={styles.dashboard__container}>
         <Link
@@ -32,6 +32,15 @@ const DashBoard = () => {
           href="/admin/zarzadzajChatami"
         >
           Zarzadzaj chatami
+        </Link>
+        <Link className={styles.dashboard__container__button} href="/admin/CMS">
+          Artykuły (CMS)
+        </Link>
+        <Link
+          className={styles.dashboard__container__button}
+          href="/admin/zarzadzajChatami"
+        >
+          Zarzadzanie rekrutacją
         </Link>
       </div>
     </section>
