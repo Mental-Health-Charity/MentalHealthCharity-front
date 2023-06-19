@@ -6,7 +6,12 @@
   flex-direction: column;
   padding: 0.1em;
   list-style: none;
+  width: fit-content;
   max-width: 80%;
+
+  @media (max-width: 550px) {
+    max-width: 12em;
+  }
 
   &--authorMe {
     align-self: flex-end;
@@ -38,6 +43,7 @@
     &__content {
       font-size: 1.1em;
       margin: 0.2em;
+      word-wrap: break-word;
     }
   }
 

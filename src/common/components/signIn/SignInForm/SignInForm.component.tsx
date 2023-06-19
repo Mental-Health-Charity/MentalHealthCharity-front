@@ -1,18 +1,13 @@
 'use client';
 import Link from 'next/link';
 import styles from './SignInForm.module.scss';
-import { FormEvent, MouseEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useAuth } from '@/contexts/authProvider/Auth.provider';
-import { NextRouter } from 'next/router';
+import { infoPopUp } from '@/utils/defaultNotifications';
 
-interface Error {
-  detail: string;
-}
-
-const SignInForm = (router: any) => {
+const SignInForm = () => {
   const { signIn, error } = useAuth();
   const [formSubmited, setFormSubmited] = useState(false);
-
   const [userData, setUserData] = useState({
     full_name: '',
     password: '',
@@ -96,9 +91,6 @@ const SignInForm = (router: any) => {
             value="Utwórz"
           />
         </p>
-        {error?.detail && formSubmited && (
-          <p className={styles.signin__form__error}>ERROR: {error?.detail}</p>
-        )}
         {error === undefined && formSubmited && (
           <p className={styles.signin__form__success}>
             Konto zostało utworzone! <Link href="/login">Zaloguj się.</Link>
