@@ -7,15 +7,18 @@ import Table from '../../common/table/Table.component';
 import Image from 'next/image';
 import LoadingIcon from '../../../images/static/loading.svg';
 import ChatItem from './chatItem/ChatItem.component';
-import Notification from '../../common/Notification/Notification.component';
 import { MouseEvent } from 'react';
+import {
+  failurePopUp,
+  infoPopUp,
+  successPopUp,
+} from '@/utils/defaultNotifications';
 
 const ChatEditor = () => {
   const { getChats, createChat } = useAdmin();
   const [chats, setChats] = useState<ChatData | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [chatName, setChatName] = useState<string | undefined>();
-  const [isNewChatCreated, setIsNewChatCreated] = useState(false);
 
   const readChats = async (page: number) => {
     setIsLoading(true);
@@ -33,21 +36,20 @@ const ChatEditor = () => {
     if (chatName && chatName?.length > 0 && chatName != '' && chatName != ' ') {
       try {
         createChat(chatName);
-        setIsNewChatCreated(true);
-        setTimeout(() => {
-          setIsNewChatCreated(false);
-        }, 2000);
+        successPopUp('Utworzono nowy chat: ' + chatName);
       } catch (error) {
         console.log('Error while creating new chat ', error);
+        failurePopUp('Wystąpił błąd podczas utworzenia nowego chatu!');
       }
     } else {
-      window.alert('ERROR: NIEPOPRAWNA NAZWA CHATU!');
+      failurePopUp('Niepoprawna nazwa chatu!');
     }
   };
 
   useEffect(() => {
     readChats(chats?.page ? chats?.page : 1);
     console.log('downloading chats...');
+    infoPopUp('Pobieram czaty...');
   }, []);
 
   return (
@@ -55,12 +57,6 @@ const ChatEditor = () => {
       <h1 className={styles.wrapper__heading}>Zarzadzaj Chatami</h1>
       <div className={styles.wrapper__creator}>
         <h2>Utwórz nowy chat</h2>
-        {isNewChatCreated && (
-          <p>
-            Wysłano pomyślnie wysłano zmiany, jeśli zmiany nie nastały
-            skontaktuj się z odpowiednim działem!
-          </p>
-        )}
         <form className={styles.wrapper__creator__form}>
           <input
             className={styles.wrapper__creator__form__input}

@@ -1,9 +1,23 @@
 import ArticlePlaceholder from '../../../images/static/ArticlePlaceholder.jpg';
 import Link from 'next/link';
 import Image from 'next/image';
-import styles from './Article.module.scss';
+import styles from './ArticleItem.module.scss';
 
-const Article = () => {
+interface ArticleItemProps {
+  author: string;
+  publishedAt: string;
+  title: string;
+  content: string;
+  src: string;
+}
+
+const ArticleItem = ({
+  author,
+  publishedAt,
+  title,
+  content,
+  src,
+}: ArticleItemProps) => {
   return (
     <article className={styles.article}>
       <div className={styles.article__authorWrapper}>
@@ -13,25 +27,23 @@ const Article = () => {
         ></span>
         <div className={styles.article__authorWrapper__authorContent}>
           <p className={styles.article__authorWrapper__authorContent__author}>
-            @Admin
+            {author}
           </p>
           <p className={styles.article__authorWrapper__authorContent__date}>
-            02.03.2000
+            {publishedAt}
           </p>
         </div>
       </div>
-      <h2 className={styles.article__title}>Placeholder title</h2>
-      <p className={styles.article__content}>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi placeat
-        eaque modi, dolor itaque temporibus quas neque provident hic accusamus!d
-      </p>
+      <h2 className={styles.article__title}>{title}</h2>
+      <p className={styles.article__content}>{content}</p>
       <Link className={styles.article__readMore} href={'/slug'}>
         Czytaj wiecej...
       </Link>
       <Image
         className={styles.article__image}
-        src={ArticlePlaceholder}
-        alt={'ArticlePlaceholder'}
+        src={src}
+        loading="lazy"
+        alt={'zdjęcie artykułu o ' + title}
         width={600}
         height={300}
       />
@@ -39,4 +51,4 @@ const Article = () => {
   );
 };
 
-export default Article;
+export default ArticleItem;

@@ -1,6 +1,10 @@
 import { createContext, useContext, SetStateAction, Dispatch } from 'react';
 import { User } from '../authProvider/Auth.provider';
 import { ChatData } from '@/utils/chatTypes';
+import { getCookies, getCookiesAuth } from '@/utils/cookies';
+import Cookies from 'js-cookie';
+import { Article } from '@/common/components/przydatneMaterialy/lib/getArticles';
+import Roles from '@/utils/roles';
 
 interface AdminContextType {
   getUsers: (limit: { from: number; to: number }) => Promise<User[]>;
@@ -10,23 +14,20 @@ interface AdminContextType {
   createChat: (name: string) => Promise<void>;
   addParticipant: (chatId: number, userId: number) => Promise<void>;
   removeParticipant: (chatId: number, userId: number) => Promise<void>;
+  createArticle: (
+    title: string,
+    content: string,
+    bannerUrl: string,
+    requiredRole: Roles,
+  ) => Promise<void>;
 }
 
 const AdminContext = createContext<AdminContextType>({} as AdminContextType);
 
 const useProvideAdmin = () => {
-  const getLocalStorageAuthToken = (headers: URLSearchParams | Headers) => {
-    headers.append(
-      'Authorization',
-      `${localStorage.getItem('jwtTokenType')} ${localStorage.getItem(
-        'jwtToken',
-      )}`,
-    );
-  };
-
   const getUsers = async (limit: { from: number; to: number }) => {
-    const headers = new URLSearchParams();
-    getLocalStorageAuthToken(headers);
+    const headers = await getCookiesAuth();
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/?skip=${limit.from}&limit=${limit.to}`,
       {
@@ -39,8 +40,8 @@ const useProvideAdmin = () => {
   };
 
   const getUserById = async (id: number) => {
-    const headers = new URLSearchParams();
-    getLocalStorageAuthToken(headers);
+    const headers = await getCookiesAuth();
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/${id}`,
       {
@@ -53,8 +54,8 @@ const useProvideAdmin = () => {
   };
 
   const editUser = async (id: number, userData: User) => {
-    const headers = new URLSearchParams();
-    getLocalStorageAuthToken(headers);
+    const headers = await getCookiesAuth();
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/${id}`,
       {
@@ -68,8 +69,8 @@ const useProvideAdmin = () => {
   };
 
   const getChats = async (page: number, size: number) => {
-    const headers = new URLSearchParams();
-    getLocalStorageAuthToken(headers);
+    const headers = await getCookiesAuth();
+
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/chat/?page=${page}&size=${size}`,
       {
@@ -82,9 +83,7 @@ const useProvideAdmin = () => {
   };
 
   const createChat = async (name: string) => {
-    const headers = new Headers();
-    getLocalStorageAuthToken(headers);
-    headers.append('Content-Type', 'application/json');
+    const headers = await getCookiesAuth();
 
     const body = {
       name: name,
@@ -98,9 +97,7 @@ const useProvideAdmin = () => {
   };
 
   const addParticipant = async (chatId: number, userId: number) => {
-    const headers = new Headers();
-    getLocalStorageAuthToken(headers);
-    headers.append('Content-Type', 'application/json');
+    const headers = await getCookiesAuth();
 
     await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/chat/${chatId}/participant/${userId}}`,
@@ -112,9 +109,7 @@ const useProvideAdmin = () => {
   };
 
   const removeParticipant = async (chatId: number, userId: number) => {
-    const headers = new Headers();
-    getLocalStorageAuthToken(headers);
-    headers.append('Content-Type', 'application/json');
+    const headers = await getCookiesAuth();
 
     await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/chat/${chatId}/corrector/${chatId}?participant_id=${userId}`,
@@ -125,6 +120,28 @@ const useProvideAdmin = () => {
     );
   };
 
+  const createArticle = async (
+    title: string,
+    content: string,
+    bannerUrl: string,
+    requiredRole: Roles,
+  ) => {
+    const headers = await getCookiesAuth();
+
+    const body = {
+      title: title,
+      content: content,
+      banner_url: bannerUrl,
+      required_role: requiredRole,
+    };
+
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/article/`, {
+      method: 'post',
+      headers,
+      body: JSON.stringify(body),
+    });
+  };
+
   return {
     getUsers,
     getUserById,
@@ -133,6 +150,7 @@ const useProvideAdmin = () => {
     createChat,
     addParticipant,
     removeParticipant,
+    createArticle,
   };
 };
 

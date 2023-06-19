@@ -1,48 +1,63 @@
 'use client';
-import { useEffect } from 'react';
-import Article from './Article/Article.component';
+import { useEffect, useState } from 'react';
+import ArticleItem from './articleItem/ArticleItem.component';
 import styles from './PrzydatneMaterialy.module.scss';
+import { Article, Articles, getArticles } from './lib/getArticles';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
+import Image from 'next/image';
+import LoadingIcon from '../../images/static/loading.svg';
 
 const PrzydatneMaterialy = () => {
-  const getAllBlogPosts = async () => {
-    const spaceId = 'rtn0gjkma2wp';
-    const accessToken = 'BeEW54hkSBEVU8oX84bggbMZUlmXUhF8w8AktvD8_yo';
-    const url = `https://cdn.contentful.com/spaces/${spaceId}/environments/master/entries?access_token=${accessToken}`;
+  const [articles, setArticles] = useState<Articles>();
+  const [loading, setLoading] = useState(true);
 
+  const getAllArticles = async () => {
     try {
-      const response = await fetch(url);
-      const data = await response.json();
-      const blogPosts = data.items.map(
-        (post: {
-          sys: { id: any };
-          fields: { name: any; body: any; author: any };
-        }) => ({
-          id: post.sys.id,
-          title: post.fields.name,
-          body: post.fields.body,
-          author: post.fields.author,
-        }),
-      );
-      console.log(blogPosts);
+      const articles = await getArticles();
+      setArticles(articles);
+      setLoading(true);
     } catch (error) {
-      console.log(error);
+      console.log('Error while loading articles, error details ', error);
+      failurePopUp('Błąd wczytywania artykułów.');
+    }
+    setLoading(false);
+  };
+
+  const loadArticles = () => {
+    if (!loading && articles) {
+      successPopUp('Załadowano artykuły :)');
+      return articles.items.map((article: Article, index) => (
+        <ArticleItem
+          key={index}
+          author={article.created_by.full_name}
+          publishedAt={article.creation_date}
+          title={article.title}
+          content={article.content}
+          src={article.banner_url}
+        />
+      ));
+    } else if (!loading && articles && articles.items.length === 0) {
+      return <p>Nie znaleziono materiałów</p>;
+    } else {
+      return (
+        <Image src={LoadingIcon} alt="Ikona ładowania" width={60} height={60} />
+      );
     }
   };
 
   useEffect(() => {
-    getAllBlogPosts();
+    getAllArticles();
   }, []);
+
   return (
     <section className={styles.articlesWrapper}>
       <h1
-        onClick={() => console.log(getAllBlogPosts())}
+        onClick={() => console.log(articles?.items.length)}
         className={styles.articlesWrapper__heading}
       >
         Wszystkie artykuły
       </h1>
-      <div className={styles.articlesWrapper__articles}>
-        <Article />
-      </div>
+      <div className={styles.articlesWrapper__articles}>{loadArticles()}</div>
     </section>
   );
 };

@@ -5,6 +5,7 @@ import { use, useEffect, useState } from 'react';
 import { User, useAuth } from '@/contexts/authProvider/Auth.provider';
 import RowList from './rowList/RowList.component';
 import Link from 'next/link';
+import { infoPopUp } from '@/utils/defaultNotifications';
 
 const UsersList = () => {
   const [users, setUsers] = useState<User[]>();
@@ -18,6 +19,9 @@ const UsersList = () => {
   useEffect(() => {
     listUsers();
     console.log('downloading...');
+    infoPopUp(
+      'Uwaga, ta podstrona jest pod przebudową techniczną i nie działa poprawnie.',
+    );
   }, []);
 
   const listUsers = async () => {

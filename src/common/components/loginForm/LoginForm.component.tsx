@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import styles from './LoginForm.module.scss';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useAuth } from '@/contexts/authProvider/Auth.provider';
 import { MouseEvent } from 'react';
 import clsx from 'clsx';
@@ -15,7 +15,7 @@ const LoginForm = () => {
     password: '',
   });
 
-  const handleLogin = (e: MouseEvent<HTMLInputElement>) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     login(loginData);
     console.log(loginData);
@@ -25,12 +25,13 @@ const LoginForm = () => {
     return (
       <section className={styles.login}>
         <h1 className={styles.login__desc}>Zaloguj</h1>
-        <form className={styles.login__form}>
+        <form onSubmit={(e) => handleLogin(e)} className={styles.login__form}>
           <p className={styles.login__form__row}>
             <label className={styles.login__form__row__label} htmlFor="email">
               E-mail
             </label>
             <input
+              required
               className={clsx(styles.login__form__row__input, {
                 [styles['login__form__row__input--incorrect']]: error,
               })}
@@ -53,6 +54,7 @@ const LoginForm = () => {
               Hasło:
             </label>
             <input
+              required
               className={clsx(styles.login__form__row__input, {
                 [styles['login__form__row__input--incorrect']]: error,
               })}
@@ -74,7 +76,6 @@ const LoginForm = () => {
             value="Zaloguj"
             className={styles.login__form__submit}
             type="submit"
-            onClick={handleLogin}
           />
         </form>
         <p>
@@ -84,13 +85,7 @@ const LoginForm = () => {
     );
   } else {
     return (
-      <section
-        style={{
-          background:
-            'linear-gradient(rgba(168, 220, 255, 0.384), rgba(137, 196, 235, 0.521))',
-        }}
-        className={styles.login}
-      >
+      <section className={styles.login}>
         <UserInfo />
       </section>
     );

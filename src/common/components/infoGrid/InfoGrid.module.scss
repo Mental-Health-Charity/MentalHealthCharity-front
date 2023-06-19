@@ -19,14 +19,14 @@
     justify-content: space-around;
     width: 100%;
     height: fit-content;
-    grid-template-columns: repeat(auto-fit, 18em);
-    grid-template-rows: repeat(auto-fit, 18em);
-    gap: 2em;
+    grid-template-columns: repeat(auto-fit, 17em);
+    grid-template-rows: repeat(auto-fit, 22em);
+    gap: 3em;
 
     &__block {
       @include flex-center-xy;
       flex-direction: column;
-      height: 100%;
+      height: auto;
       width: 100%;
       background-color: $yellow;
       border-radius: 15%;
@@ -34,8 +34,8 @@
       position: relative;
 
       &__image {
-        height: 100%;
-        width: 100%;
+        height: auto;
+        width: 10em;
       }
 
       &::before {

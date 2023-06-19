@@ -15,7 +15,7 @@ const InfoGrid = () => {
           <Image
             className={styles.infoGrid__blocksWrapper__block__image}
             src={ExampleImage}
-            alt={''}
+            alt={'Grafika zdrowie psychiczne'}
             width={200}
             height={200}
           />
@@ -25,7 +25,7 @@ const InfoGrid = () => {
           <Image
             className={styles.infoGrid__blocksWrapper__block__image}
             src={ExampleImage2}
-            alt={''}
+            alt={'Grafika zdrowie psychiczne'}
             width={200}
             height={200}
           />
@@ -35,7 +35,7 @@ const InfoGrid = () => {
           <Image
             className={styles.infoGrid__blocksWrapper__block__image}
             src={ExampleImage}
-            alt={''}
+            alt={'Grafika zdrowie psychiczne'}
             width={200}
             height={200}
           />

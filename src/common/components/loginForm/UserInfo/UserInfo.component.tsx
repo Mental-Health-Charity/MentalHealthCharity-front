@@ -4,17 +4,18 @@ import { panelRoutes } from '@/utils/routes';
 import Link from 'next/link';
 import Image from 'next/image';
 import defaultUserPic from '../../../images/static/user.png';
+import Roles from '@/utils/roles';
 
 const UserInfo = () => {
   const { user, logout } = useAuth();
 
   const getUserRole = () => {
     switch (user?.user_role) {
-      case 'user':
+      case Roles.user:
         return panelRoutes.menteePanel;
-      case 'volunteer':
+      case Roles.volunteer:
         return panelRoutes.volunteerPanel;
-      case 'admin':
+      case Roles.admin:
         return panelRoutes.adminPanel;
       default:
         return '#';
@@ -30,23 +31,36 @@ const UserInfo = () => {
         height={60}
       />
       <h1>Ustawienia konta:</h1>
-      <ul className={styles.userWrapper__values}>
-        <li className={styles.userWrapper__values__value}>
-          Twój unikalny identyfikator (ID): {user?.id}
+      <ul className={styles.userWrapper__list}>
+        <li className={styles.userWrapper__list__item}>
+          <p className={styles.userWrapper__list__item__label}>
+            Twój unikalny identyfikator (ID):
+          </p>
+          <p className={styles.userWrapper__list__item__value}>{user?.id}</p>
         </li>
-        <li className={styles.userWrapper__values__value}>
-          Imie: {user?.full_name === null ? 'Anonim' : user?.full_name}
+        <li className={styles.userWrapper__list__item}>
+          <p className={styles.userWrapper__list__item__label}>Imie:</p>
+          <p className={styles.userWrapper__list__item__value}>
+            {user?.full_name === '' ? 'Anonim' : user?.full_name}
+          </p>
         </li>
-        <li className={styles.userWrapper__values__value}>
-          Adres e-mail: {user?.email}
+        <li className={styles.userWrapper__list__item}>
+          <p className={styles.userWrapper__list__item__label}>Adres e-mail:</p>
+          <p className={styles.userWrapper__list__item__value}>{user?.email}</p>
         </li>
-        <li className={styles.userWrapper__values__value}>
-          {user?.is_active === true
-            ? 'Brak blokad konta'
-            : 'Konto zablokowane!'}
+        <li className={styles.userWrapper__list__item}>
+          <p className={styles.userWrapper__list__item__label}>status konta:</p>
+          <p className={styles.userWrapper__list__item__value}>
+            {user?.is_active === true
+              ? 'Brak blokad konta'
+              : 'Konto zablokowane!'}
+          </p>
         </li>
-        <li className={styles.userWrapper__values__value}>
-          Uprawnienia: {user?.user_role}
+        <li className={styles.userWrapper__list__item}>
+          <p className={styles.userWrapper__list__item__label}>Uprawnienia:</p>
+          <p className={styles.userWrapper__list__item__value}>
+            {user?.user_role}
+          </p>
         </li>
       </ul>
       <input
@@ -56,7 +70,7 @@ const UserInfo = () => {
         onClick={logout}
       />
       <div className={styles.userWrapper__suggest}>
-        <p className={styles.userWrapper__suggest__desc}>Sprawdź również:</p>
+        <p className={styles.userWrapper__suggest__desc}>Sugestie:</p>
         <Link
           className={styles.userWrapper__suggest__link}
           href={getUserRole()}

@@ -2,6 +2,9 @@ import { Chat } from '@/utils/chatTypes';
 import styles from './ChatItem.module.scss';
 import { useAdmin } from '@/contexts/adminProvider/Admin.provider';
 import { useState } from 'react';
+import PowerOffIcon from '../../../../images/static/poweroff.png';
+import Image from 'next/image';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
 
 interface ChatItemProps {
   chat: Chat;
@@ -18,11 +21,16 @@ const ChatItem = ({ chat, readChats, page }: ChatItemProps) => {
       try {
         await addParticipant(chat.id, userId);
         readChats(page);
+        successPopUp(
+          'Dodano nowego członka o id: ' + userId + 'na chat o id: ' + chat.id,
+        );
       } catch (error) {
         console.log('ERROR while adding new participant ', error);
+        failurePopUp('Błąd podczas dodawania nowego członka!');
       }
     } else {
       console.log('ERROR user id is not provided!');
+      failurePopUp('Błąd podczas dodawania nowego członka! Wprowadź ID.');
     }
   };
 
@@ -35,11 +43,16 @@ const ChatItem = ({ chat, readChats, page }: ChatItemProps) => {
         console.log(chatId);
         await removeParticipant(chatId, removeUserId);
         readChats(page);
+        successPopUp(
+          'Członek o id ' + removeUserId + ' został poprawnie usunięty.',
+        );
       } catch (error) {
         console.log('ERROR while removing participant ', error);
+        failurePopUp('Błąd podczas usuwania członka!');
       }
     } else {
       console.log('ERROR user id is not provided!');
+      failurePopUp('ID użytkownika nie zostało wprowadzone!');
     }
   };
 
@@ -51,7 +64,14 @@ const ChatItem = ({ chat, readChats, page }: ChatItemProps) => {
       <p className={styles.chatItem__date}>Utworzono: {chat.creation_date}</p>
       <p className={styles.chatItem__active}>
         {chat.is_active ? 'Aktywny' : 'Nieaktywny'}
-        <button className={styles.chatItem__active__button}>OFF</button>
+        <button className={styles.chatItem__active__button}>
+          <Image
+            src={PowerOffIcon}
+            width={30}
+            height={30}
+            alt="Ikona wyłączenia"
+          />
+        </button>
       </p>
       <div className={styles.chatItem__participants}>
         <p className={styles.chatItem__participants__heading}>
