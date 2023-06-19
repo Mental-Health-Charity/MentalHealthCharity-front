@@ -2,11 +2,14 @@ import { useChat } from '@/contexts/chatProvider/Chat.provider';
 import styles from './ChatWindow.module.scss';
 import ChatMessage from './chatMessage/ChatMessage.component';
 import ChatShortcut from './chatShortcut/ChatShortcut.component';
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Chat, ChatData, Message, Messages } from '@/utils/chatTypes';
-import { useAuth } from '@/contexts/authProvider/Auth.provider';
+import { FormEvent, useEffect, useState } from 'react';
+import { Chat, ChatData, Messages } from '@/utils/chatTypes';
+import { User, useAuth } from '@/contexts/authProvider/Auth.provider';
 import Image from 'next/image';
 import LoadingIcon from '../../../images/static/loading.svg';
+import 'react-toastify/dist/ReactToastify.css';
+import { failurePopUp, successPopUp } from '@/utils/defaultNotifications';
+import Roles from '@/utils/roles';
 
 const ChatWindow = () => {
   const { getChats, getMessages, sendMessage } = useChat();
@@ -22,8 +25,11 @@ const ChatWindow = () => {
     try {
       const data: ChatData = await getChats(page, 30);
       setChats(data);
+      console.log(data);
+      user && successPopUp('Wczytano dostępne czaty!');
     } catch (error) {
       console.log('Error retrieving data ', error);
+      failurePopUp('Wystąpił błąd podczas wczytywania czatów...');
     }
     setIsLoading(false);
   };
@@ -38,15 +44,46 @@ const ChatWindow = () => {
     }
   };
 
+  const getUserRole = (participant: User) => {
+    switch (participant.user_role) {
+      case Roles.admin:
+        return (
+          <span
+            className={
+              styles.chatWindow__chat__participants__participant__roleAdmin
+            }
+          >
+            [Admin]
+          </span>
+        );
+      case Roles.volunteer:
+        return (
+          <span
+            className={
+              styles.chatWindow__chat__participants__participant__roleVolunteer
+            }
+          >
+            [Wolontariusz]
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
+    // == WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! WARNING !!! ==
+    // THIS CODE BELOW IS AN NON-OPTIMIZED PROTOTYPE USED ONLY FOR EARLY-ACCESS VERSION OF CHAT
+    // THE REASON FOR THIS SOLUTION IS BACKEND WHICH CURRENTLY DOESN'T SUPPORT WEBSOCKETS.
     readChats(1);
     if (selectedChat) {
       const interval = setInterval(() => {
         handleReadMessages(selectedChat);
-        console.log('POBIERAM');
+        console.log('downloading...');
       }, 5000);
       return () => clearInterval(interval);
     }
+    // == END == == END == == END == == END == == END == == END == == END == == END == == END ==
   }, [selectedChat]);
 
   const handleSendMessage = async (e: FormEvent<HTMLFormElement>) => {
@@ -91,8 +128,27 @@ const ChatWindow = () => {
             {selectedChat
               ? selectedChat.participants?.map((user, index) => {
                   return (
-                    <li key={index}>
-                      {user.full_name ? user.full_name : 'Anonim'}
+                    <li
+                      className={
+                        styles.chatWindow__chat__participants__participant
+                      }
+                      key={index}
+                    >
+                      {getUserRole(user)}
+                      <p
+                        className={
+                          styles.chatWindow__chat__participants__participant__name
+                        }
+                      >
+                        {user.full_name ? user.full_name : 'Anonim'}
+                      </p>
+                      <p
+                        className={
+                          styles.chatWindow__chat__participants__participant__id
+                        }
+                      >
+                        ({user.id})
+                      </p>
                     </li>
                   );
                 })

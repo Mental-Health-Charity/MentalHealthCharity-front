@@ -1,0 +1,87 @@
+@use '../../styles/mixins.module' as *;
+@use '../../styles/variables.module' as *;
+
+.formWrapper {
+  @include flex-center-xy;
+  padding: 10em 2em 2em 2em;
+  margin: 1em 0 1em 0;
+  flex-direction: column;
+
+  &__heading {
+    color: $navy;
+    font-size: 2em;
+    margin: 0;
+    text-shadow: 0.1em 0.1em 0.1em #1b1b1b4b;
+  }
+
+  &__desc {
+    color: $white;
+    background-color: $error;
+    font-size: 1.1em;
+    padding: 1.1em;
+    border-radius: 1em;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    width: 23em;
+
+    &__label {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+      color: $navy;
+    }
+
+    &__input {
+      padding: 0.5em;
+      margin-bottom: 1em;
+      border: 1px solid $navy;
+      border-radius: 0.1em;
+      font-size: 1.1em;
+
+      color: $navy;
+
+      &:focus {
+        outline-color: $yellow;
+        box-shadow: 0 0 4px $yellow;
+      }
+    }
+
+    &__submit {
+      padding: 0.5em 1em;
+      background-color: $navy;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $yellow;
+      }
+    }
+  }
+
+  &__subContactHeading {
+    color: $error;
+    margin: 2em 1em 0 1em;
+  }
+
+  &__subContactList {
+    list-style: circle;
+
+    &__option {
+      font-size: 1.1em;
+      color: $navy;
+
+      &__link {
+        color: $navy;
+        text-decoration: none;
+
+        &:hover {
+          color: $yellow;
+        }
+      }
+    }
+  }
+}

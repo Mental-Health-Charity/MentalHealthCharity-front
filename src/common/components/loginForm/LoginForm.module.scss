@@ -3,10 +3,16 @@
 
 .login {
   @include flex-center-xy;
+  padding-top: 5em;
   width: 100%;
-  min-height: 100svh;
+  height: 100svh;
+  min-height: 65em;
   flex-direction: column;
   color: $navy;
+  background: linear-gradient(
+    rgba(168, 220, 255, 0.384),
+    rgba(137, 196, 235, 0.521)
+  );
 
   @media (max-width: 550px) {
     font-size: 0.7rem;
@@ -46,11 +52,12 @@
 
     &__submit {
       @include default-button;
-      border: 2px solid $black;
+      border: 0.1em solid $black;
       font-size: 1em;
       width: 100%;
       transition: 0.5s;
       font-weight: 1000;
+      height: 3em;
 
       &:hover {
         background-color: $navy;
@@ -69,6 +76,7 @@
         border-bottom: 2px solid $white;
         font-size: 2em;
         color: $white;
+        width: 100%;
 
         &--incorrect {
           border: 2px solid red;
