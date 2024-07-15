@@ -33,7 +33,7 @@
     "socket.io-client": "^4.7.5",
     "use-debounce": "^10.0.1",
     "yup": "^1.4.0",
-    "sass": "^1.77.5"
+    "sass": "^1.77.8"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
